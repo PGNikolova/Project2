@@ -1,10 +1,9 @@
 $("#searchInp").on("keyup", function () {
-  
   var searchText = $(this).val();
 
   // AJAX request to the PHP file
   $.ajax({
-      url: "libs/php/searchAll.php",  // Change to the actual path of your PHP file
+      url: "http://localhost/project2/dist/PHP/SearchAll.php",  // Change to the actual path of your PHP file
       type: "GET",  // or "POST" if you use $_POST in PHP for production
       data: {
           txt: searchText  // Passing the input value as 'txt'
@@ -12,32 +11,39 @@ $("#searchInp").on("keyup", function () {
       dataType: "json",
       success: function (response) {
           if (response.status.code == "200") {
-              // Clear any previous results
-              $("#searchResults").empty();
+              // Clear any previous results in the table
+              $("#personnelTableBody").empty();
 
-              // Loop through the found results and display them
+              // Loop through the found results and create table rows
               $.each(response.data.found, function (index, item) {
-                  $("#searchResults").append(
-                      "<div class='result-item'>" +
-                      "<p>Name: " + item.firstName + " " + item.lastName + "</p>" +
-                      "<p>Email: " + item.email + "</p>" +
-                      "<p>Job Title: " + item.jobTitle + "</p>" +
-                      "<p>Department: " + item.departmentName + "</p>" +
-                      "<p>Location: " + item.locationName + "</p>" +
-                      "</div>"
-                  );
+                  var rowHtml = "<tr>" +
+                      "<td class='align-middle text-nowrap'>" + item.lastName + ", " + item.firstName + "</td>" +
+                      "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.jobTitle + "</td>" +
+                      "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
+                      "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.email + "</td>" +
+                      "<td class='text-end text-nowrap'>" +
+                      "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editPersonnelModal' data-id='" + item.id + "'>" +
+                      "<i class='fa-solid fa-pencil fa-fw'></i>" +
+                      "</button> " +
+                      "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deletePersonnelModal' data-id='" + item.id + "'>" +
+                      "<i class='fa-solid fa-trash fa-fw'></i>" +
+                      "</button>" +
+                      "</td>" +
+                      "</tr>";
+
+                  // Append the generated row to the table body
+                  $("#personnelTableBody").append(rowHtml);
               });
           } else {
               // Handle errors (e.g., database unavailable)
-              $("#searchResults").html("<p>Error: " + response.status.description + "</p>");
+              $("#personnelTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
           }
       },
       error: function (xhr, status, error) {
           // Handle AJAX errors
-          $("#searchResults").html("<p>AJAX Error: " + error + "</p>");
+          $("#personnelTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
       }
   });
-  
 });
 
 $("#refreshBtn").click(function () {
