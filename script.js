@@ -68,11 +68,102 @@ $("#refreshBtn").click(function () {
   
 });
 
+// When the filter button is clicked, show the modal
 $("#filterBtn").click(function () {
-  
-  // Open a modal of your own design that allows the user to apply a filter to the personnel table on either department or location
-  
+  // Open the filter modal
+  $("#filterPersonnelModal").modal('show');
 });
+
+// When the filter form is submitted, filter the personnel data
+$("#filterPersonnelForm").submit(function (e) {
+  e.preventDefault(); // Prevent the form from submitting normally
+
+  var department = $("#filterPersonnelDepartment").val(); // Remove .trim() for testing
+  var location = $("#filterPersonnelLocation").val(); // Remove .trim() for testing
+  // Get the values from the input fields for department and location
+  console.log("Department: ", department);
+  console.log("Location: ", location);
+
+  // Send an AJAX request to SearchAll.php to retrieve all personnel data
+  $.ajax({
+    url: "http://localhost/project2/dist/PHP/SearchAll.php",
+    type: 'GET',
+    data: {
+      txt: '' // Empty string to get all personnel
+    },
+    success: function (response) {
+      // Log the response to see what is returned
+      console.log("AJAX Response: ", response);
+
+      let filteredResults = response.data.found;
+
+      if (department || location) {
+        filteredResults = filteredResults.filter(function(item) {
+          var matchesDepartment;
+          var matchesLocation;
+
+          // Check if department is provided
+          if (department) {
+            matchesDepartment = item.departmentName.toLowerCase().indexOf(department.toLowerCase()) !== -1;
+          } else {
+            matchesDepartment = true;
+          }
+
+          // Check if location is provided
+          if (location) {
+            matchesLocation = item.locationName.toLowerCase().indexOf(location.toLowerCase()) !== -1;
+          } else {
+            matchesLocation = true;
+          }
+
+          // Return true if both match
+          return matchesDepartment && matchesLocation;
+        });
+      }
+
+      // Clear the table body
+      $("#personnelTableBody").empty();
+
+      // Check if filtered personnel data is not empty
+      if (filteredResults.length > 0) {
+        // Loop through the filtered results and create table rows
+        $.each(filteredResults, function (index, item) {
+          var rowHtml = "<tr>" +
+            "<td class='align-middle text-nowrap'>" + item.lastName + ", " + item.firstName + "</td>" +
+            "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.jobTitle + "</td>" +
+            "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
+            "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.email + "</td>" +
+            "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.departmentName + "</td>" +
+            "<td class='text-end text-nowrap'>" +
+            "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editPersonnelModal' data-id='" + item.id + "'>" +
+            "<i class='fa-solid fa-pencil fa-fw'></i>" +
+            "</button> " +
+            "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deletePersonnelModal' data-id='" + item.id + "'>" +
+            "<i class='fa-solid fa-trash fa-fw'></i>" +
+            "</button>" +
+            "</td>" +
+            "</tr>";
+
+          // Append the generated row to the table body
+          $("#personnelTableBody").append(rowHtml);
+        });
+      } else {
+        // If no personnel match the filter, show a message or empty state
+        $("#personnelTableBody").append('<tr><td colspan="5">No personnel found</td></tr>');
+      }
+
+      // Close the modal after applying the filter
+      $("#filterPersonnelModal").modal('hide');
+    },
+    error: function (xhr, status, error) {
+      console.error("Error: " + error);
+    }
+  });
+
+});
+
+
+  
 
 $("#addBtn").click(function () {
   
