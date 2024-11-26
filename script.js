@@ -47,17 +47,21 @@ $("#searchInp").on("keyup", function () {
   });
 });
 
+
+
 $("#refreshBtn").click(function () {
   
   if ($("#personnelBtn").hasClass("active")) {
     
     // Refresh personnel table
+loadPersonnel();
     
   } else {
     
     if ($("#departmentsBtn").hasClass("active")) {
       
       // Refresh department table
+   loadDepartments();
       
     } else {
       
@@ -65,7 +69,7 @@ $("#refreshBtn").click(function () {
          
       }
       // Refresh location table
-
+    loadLocations();
       
     }
     
@@ -73,7 +77,7 @@ $("#refreshBtn").click(function () {
   
 });
 
-// When the filter button is clicked, show the modal
+// When the FILTER button is clicked, show the modal
 $("#filterBtn").click(function () {
   // Open the filter modal
   $("#filterPersonnelModal").modal('show');
@@ -88,7 +92,7 @@ $("#filterPersonnelForm").submit(function (e) {
   // Get the values from the input fields for department and location
 
 
-  // Send an AJAX request to SearchAll.php to retrieve all personnel data
+  // Send an AJAX request to SearchAll.php to retrieve search
   $.ajax({
     url: "http://localhost/project2/dist/PHP/SearchAll.php",
     type: 'GET',
@@ -167,6 +171,12 @@ $("#filterPersonnelForm").submit(function (e) {
 });
 
 
+//TEST - filter through all tabs dynamically//
+
+
+
+
+//----------------------------------
   
 
 $("#addBtn").click(function () {
@@ -175,7 +185,9 @@ $("#addBtn").click(function () {
   
 });
 
-$("#personnelBtn").click(function () {
+
+
+function loadPersonnel() {
   
   // Call function to refresh personnel table
 
@@ -219,11 +231,23 @@ $("#personnelBtn").click(function () {
             $("#personnelTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
         }
     });
-});
+  };
 
+  $(document).ready(function () {
+    loadPersonnel(); // Load personnel on page load
+  });
+  
+  // Reload personnel when the locations button is clicked
+  $("#personnelBtn").click(function () {
+    loadPersonnel(); // Reuse the same function
+  });
+
+
+
+// Call function to refresh department table
+
+function loadDepartments() {
 $("#departmentsBtn").click(function () {
-
-// Call function to refresh personnel table
 
   $.ajax({
     url: "http://localhost/project2/dist/PHP/SearchAll.php",
@@ -269,14 +293,84 @@ $("#departmentsBtn").click(function () {
     }
   });
 });
+};
 
+$(document).ready(function(){
+  loadDepartments();
+});
+
+$("#departmentsBtn").click(function(){
+  loadDepartments();
+});
       
+
+function loadLocations() {
 
 $("#locationsBtn").click(function () {
   
   // Call function to refresh location table
+
+    $.ajax({
+      url: "http://localhost/project2/dist/PHP/SearchAll.php",
+      type: "GET",
+      data: { txt: "" },
+      dataType: "json",
+      success: function (response) {
+        if (response.status.code === "200") {
+          // Clear the location table body
+          $("#locationTableBody").empty();
   
-});
+          // Track unique locations to avoid duplicates
+          const uniqueLocations = {};
+  
+          // Iterate through the returned data
+          $.each(response.data.found, function (index, item) {
+            const uniqueKey = item.locationName;
+  
+            // Only add the row if this location is not already added
+            if (!uniqueLocations[uniqueKey]) {
+              uniqueLocations[uniqueKey] = true;
+  
+              // Create a new row
+              const newrowHTML =
+                "<tr>" +
+                "<td class='align-middle text-nowrap'>" + item.locationName + "</td>" +
+                "<td class='text-end text-nowrap'>" +
+                "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editLocationModal' data-id='" + item.id + "'>" +
+                "<i class='fa-solid fa-pencil fa-fw'></i>" +
+                "</button> " +
+                "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteLocationModal' data-id='" + item.id + "'>" +
+                "<i class='fa-solid fa-trash fa-fw'></i>" +
+                "</button>" +
+                "</td>" +
+                "</tr>";
+  
+              // Append the row to the location table body
+              $("#locationTableBody").append(newrowHTML);
+            }
+          });
+        } else {
+          // Display error message if the response code is not 200
+          $("#locationTableBody").html("<tr><td colspan='2'>Error: " + response.status.description + "</td></tr>");
+        }
+      },
+      error: function (xhr, status, error) {
+        // Handle AJAX errors
+        $("#locationTableBody").html("<tr><td colspan='2'>AJAX Error: " + error + "</td></tr>");
+      }
+    });
+  });
+};
+  
+  $(document).ready(function(){
+    loadLocations();
+  });
+
+  $("#locationsBtn").click(function(){
+    loadLocations();
+  });
+
+
 
 $("#editPersonnelModal").on("show.bs.modal", function (e) {
   
