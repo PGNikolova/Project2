@@ -69,7 +69,7 @@ loadPersonnel();
          
       }
       // Refresh location table
-    loadLocations();
+    loadLocations
       
     }
     
@@ -182,8 +182,33 @@ $("#filterPersonnelForm").submit(function (e) {
 $("#addBtn").click(function () {
   
   // Replicate the logic of the refresh button click to open the add modal for the table that is currently on display
-  
+  if ( $("#personnelBtn").hasClass("active"))
+{
+  // open the add button modal 
+
+}  else {
+
+  if ($("#departmentsBtn").hasClass("active")) {
+
+    // open addBtn modal in departments
+  } else {
+
+    if ($("#locationsBtn").hasClass("active")) {
+
+      //open addBtn in locations
+    }
+  }
+}
 });
+
+
+//function to add new personnel  personnel tab
+
+
+
+// function to add new department 
+
+//function to add new location
 
 
 
@@ -246,63 +271,122 @@ function loadPersonnel() {
 
 // Call function to refresh department table
 
+// function loadDepartments() {
+// $("#departmentsBtn").click(function () {
+
+//   $.ajax({
+//     url: "http://localhost/project2/dist/PHP/SearchAll.php",
+//     type: "GET",
+//     data: { txt: "" },
+//     dataType: "json",
+//     success: function (response) {
+//       if (response.status.code === "200") {
+//         $("#departmentTableBody").empty();
+
+//         // Track unique departments by department and location name
+//         const uniqueDepartments = {};
+
+//         $.each(response.data.found, function (index, item) {
+//           const uniqueKey = item.departmentName + "-" + item.locationName;
+
+//           // Only add the row if this combination hasn't been seen before
+//           if (!uniqueDepartments[uniqueKey]) {
+//             uniqueDepartments[uniqueKey] = true;
+
+//             const newrowHTML = "<tr>" +
+//               "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.departmentName + "</td>" +
+//               "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
+//               "<td class='text-end text-nowrap'>" +
+//               "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='" + item.id + "'>" +
+//               "<i class='fa-solid fa-pencil fa-fw'></i>" +
+//               "</button> " +
+//               "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteDepartmentBtn' data-id='" + item.id + "'>" +
+//               "<i class='fa-solid fa-trash fa-fw'></i>" +
+//               "</button>" +
+//               "</td>" +
+//               "</tr>";
+
+//             $("#departmentTableBody").append(newrowHTML);
+//           }
+//         });
+//       } else {
+//         $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
+//       }
+//     },
+//     error: function (xhr, status, error) {
+//       $("#departmentTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
+//     }
+//   });
+// });
+// };
+
+// $(document).ready(function(){
+//   loadDepartments();
+// });
+
+
+
+//TEST//
+
 function loadDepartments() {
-$("#departmentsBtn").click(function () {
+  $("#departmentsBtn").click(function () {
+      $.ajax({
+          url: "http://localhost/project2/dist/PHP/getAll.php",
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+              if (response.status.code === "200") {
+                  $("#departmentTableBody").empty();
 
-  $.ajax({
-    url: "http://localhost/project2/dist/PHP/SearchAll.php",
-    type: "GET",
-    data: { txt: "" },
-    dataType: "json",
-    success: function (response) {
-      if (response.status.code === "200") {
-        $("#departmentTableBody").empty();
+                  const uniqueDepartments = {};
 
-        // Track unique departments by department and location name
-        const uniqueDepartments = {};
+                  $.each(response.data, function (index, item) {
+                      const uniqueKey = item.department + "-" + item.location;
 
-        $.each(response.data.found, function (index, item) {
-          const uniqueKey = item.departmentName + "-" + item.locationName;
+                      // Only add the row if this combination hasn't been seen before
+                      if (!uniqueDepartments[uniqueKey]) {
+                          uniqueDepartments[uniqueKey] = true;
 
-          // Only add the row if this combination hasn't been seen before
-          if (!uniqueDepartments[uniqueKey]) {
-            uniqueDepartments[uniqueKey] = true;
+                          const newRowHTML = `<tr>
+                              <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.department}</td>
+                              <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.location}</td>
+                              <td class='text-end text-nowrap'>
+                                  <button type='button' class='btn btn-primary btn-sm' 
+                                          data-bs-toggle='modal' 
+                                          data-bs-target='#editDepartmentModal' 
+                                          data-id='${item.department}'>
+                                      <i class='fa-solid fa-pencil fa-fw'></i>
+                                  </button>
+                                  <button type='button' class='btn btn-primary btn-sm' 
+                                          data-bs-toggle='modal' 
+                                          data-bs-target='#deleteDepartmentBtn' 
+                                          data-id='${item.department}'>
+                                      <i class='fa-solid fa-trash fa-fw'></i>
+                                  </button>
+                              </td>
+                          </tr>`;
 
-            const newrowHTML = "<tr>" +
-              "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.departmentName + "</td>" +
-              "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
-              "<td class='text-end text-nowrap'>" +
-              "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='" + item.id + "'>" +
-              "<i class='fa-solid fa-pencil fa-fw'></i>" +
-              "</button> " +
-              "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteDepartmentBtn' data-id='" + item.id + "'>" +
-              "<i class='fa-solid fa-trash fa-fw'></i>" +
-              "</button>" +
-              "</td>" +
-              "</tr>";
-
-            $("#departmentTableBody").append(newrowHTML);
+                          $("#departmentTableBody").append(newRowHTML);
+                      }
+                  });
+              } else {
+                  $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
+              }
+          },
+          error: function (xhr, status, error) {
+              $("#departmentTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
           }
-        });
-      } else {
-        $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
-      }
-    },
-    error: function (xhr, status, error) {
-      $("#departmentTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
-    }
+      });
   });
-});
-};
+}
 
-$(document).ready(function(){
+$(document).ready(function () {
   loadDepartments();
 });
-
 $("#departmentsBtn").click(function(){
   loadDepartments();
 });
-      
+
 
 function loadLocations() {
 
@@ -374,16 +458,19 @@ $("#locationsBtn").click(function () {
 
 $("#editPersonnelModal").on("show.bs.modal", function (e) {
   
+  var recordId = $(e.relatedTarget).data("id");
+  console.log("Record ID from button:", recordId);
+
   $.ajax({
     url:
-      "https://coding.itcareerswitch.co.uk/companydirectory/libs/php/getPersonnelByID.php",
+      "http://localhost/project2/dist/PHP/getPersonnelByID.php",
     type: "POST",
     dataType: "json",
     data: {
       // Retrieve the data-id attribute from the calling button
       // see https://getbootstrap.com/docs/5.0/components/modal/#varying-modal-content
       // for the non-jQuery JavaScript alternative
-      id: $(e.relatedTarget).attr("data-id") 
+      id: recordId 
     },
     success: function (result) {
       var resultCode = result.status.code;
@@ -397,7 +484,7 @@ $("#editPersonnelModal").on("show.bs.modal", function (e) {
 
         $("#editPersonnelFirstName").val(result.data.personnel[0].firstName);
         $("#editPersonnelLastName").val(result.data.personnel[0].lastName);
-        $("#editPersonnelJobTitle").val(result.data.personnel[0].jobTitle);
+        // $("#editPersonnelJobTitle").val(result.data.personnel[0].jobTitle);
         $("#editPersonnelEmailAddress").val(result.data.personnel[0].email);
 
         $("#editPersonnelDepartment").html("");
@@ -437,5 +524,77 @@ $("#editPersonnelForm").on("submit", function (e) {
   e.preventDefault();
 
   // AJAX call to save form data
+
+  var formData = $(this).serialize();
   
+  $.ajax({
+    url: "http://localhost/project2/dist/PHP/updatePersonnel.php", // Change URL to your update endpoint
+    type: "POST",
+    dataType: "json",
+    data: formData,
+    success: function (response) {
+      if (response.status.code === '200') {
+        // Optionally close the modal and show a success message
+        $("#editPersonnelModal").modal("hide");
+        alert("Update successful!");
+      } else {
+        // Handle error scenario
+        alert("Error updating record: " + response.status.message);
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      alert("AJAX error: " + textStatus);
+    }
+  });
+});
+  
+
+
+// EDIT Department entries
+
+$("#editDepartmentModal").on("show.bs.modal", function (e) {
+  const departmentId = $(e.relatedTarget).attr("data-id");
+
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/getAll.php",
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+          if (response.status.code === "200") {
+              // Find the current department
+              const department = response.data.find(dept => dept.id == departmentId);
+              if (!department) {
+                  $("#editDepartmentModal .modal-title").text("Department not found");
+                  return;
+              }
+
+              // Set the department name in the input field
+              $("#editDepartmentName").val(department.department);
+
+              // Populate the location dropdown
+              $("#editDepartmentLocation").empty();
+              const uniqueLocations = {};
+
+              $.each(response.data, function (index, item) {
+                  if (!uniqueLocations[item.location]) {
+                      uniqueLocations[item.location] = true;
+                      $("#editDepartmentLocation").append(
+                          $("<option>", {
+                              value: item.location,
+                              text: item.location
+                          })
+                      );
+                  }
+              });
+
+              // Set the selected location
+              $("#editDepartmentLocation").val(department.location);
+          } else {
+              $("#editDepartmentModal .modal-title").text("Error retrieving data");
+          }
+      },
+      error: function () {
+          $("#editDepartmentModal .modal-title").text("Error retrieving data");
+      }
+  });
 });
