@@ -117,10 +117,10 @@
               London
             </td>
             <td class="align-middle text-end text-nowrap">
-              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id="1">
+              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=1>
                 <i class="fa-solid fa-pencil fa-fw"></i>
               </button>
-              <button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-id="1">
+              <button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-id=1>
                 <i class="fa-solid fa-trash fa-fw"></i>
               </button>
             </td>
@@ -245,15 +245,18 @@
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+
               <form id="editDepartmentForm">
-                  <input type="hidden" id="editDepartmentID">
+
+                  <input type="hidden" id="editDepartmentID" name="id">
+
                   <div class="form-floating mb-3">
-                      <input type="text" class="form-control" id="editDepartmentName" placeholder="Department" required>
+                      <input type="text" class="form-control" id="editDepartmentName" placeholder="Department" name="name" required>
                       <label for="editDepartmentName">Department Name</label>
                   </div>
                   <div class="mb-3">
                       <label for="editDepartmentLocation" class="form-label">Location</label>
-                      <select class="form-select" id="editDepartmentLocation">
+                      <select class="form-select" id="editDepartmentLocation" name="locationID">
                           <!-- Location options will be dynamically populated here -->
                       </select>
                   </div>
@@ -261,6 +264,37 @@
           </div>
           <div class="modal-footer">
               <button type="submit" form="editDepartmentForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
+              <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!--EDIT LOCATION ENTRIES-->
+
+<div id="editLocationModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content shadow">
+          <div class="modal-header bg-primary bg-gradient text-white">
+              <h5 class="modal-title">Edit Location</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+              <form id="editLocationForm">
+
+                  <input type="hidden" id="editLocationID" name="id">
+
+                  <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="editLocationName" placeholder="Department" name="name" required>
+                      <label for="editLocationName">Location Name</label>
+                  </div>
+                 
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="submit" form="editLocationForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
               <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
           </div>
       </div>
@@ -280,6 +314,7 @@
       
       <div class="modal-header bg-primary bg-gradient text-white">
         <h5 class="modal-title">Filter</h5>
+        
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
