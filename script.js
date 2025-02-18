@@ -69,7 +69,7 @@ loadPersonnel();
          
       }
       // Refresh location table
-    loadLocations
+    loadLocations()
       
     }
     
@@ -271,7 +271,7 @@ function loadPersonnel() {
 
 // Call function to refresh department table
 
-// function loadDepartments() {
+// function () {
 // $("#departmentsBtn").click(function () {
 
 //   $.ajax({
@@ -328,138 +328,191 @@ function loadPersonnel() {
 
 //TEST loading departments using getAll.php//
 
+// Ensure departments load when the tab is clicked and also on page load
 function loadDepartments() {
-  $("#departmentsBtn").click(function () {
-      $.ajax({
-          url: "http://localhost/project2/dist/PHP/getAllDepartments.php",
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-              if (response.status.code === "200") {
-                  $("#departmentTableBody").empty();
+  console.log("Refreshing Department Table...");
+  
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/getAllDepartments.php",
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+          if (response.status.code === "200") {
+              $("#departmentTableBody").empty();
 
-                  const uniqueDepartments = {};
+              $.each(response.data, function (index, item) {
+                  const rowHtml = `<tr>
+                      <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.department}</td>
+                      <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.locationName}</td>
+                      <td class='text-end text-nowrap'>
+                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='${item.id}'>
+                              <i class='fa-solid fa-pencil fa-fw'></i>
+                          </button>
+                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteDepartmentModal' data-id='${item.id}'>
+                              <i class='fa-solid fa-trash fa-fw'></i>
+                          </button>
+                      </td>
+                  </tr>`;
 
-                  $.each(response.data, function (index, item) {
-                      const uniqueKey = item.department + "-" + item.location;
+                  $("#departmentTableBody").append(rowHtml);
+              });
 
-                      // Only add the row if this combination hasn't been seen before
-                      if (!uniqueDepartments[uniqueKey]) {
-                          uniqueDepartments[uniqueKey] = true;
-
-                          const newRowHTML = `<tr>
-                              <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.department}</td>
-                              <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.locationName}</td>
-                              <td class='text-end text-nowrap'>
-                                  <button type='button' class='btn btn-primary btn-sm' 
-                                          data-bs-toggle='modal' 
-                                          data-bs-target='#editDepartmentModal' 
-                                          data-id='${item.id}'>
-                                      <i class='fa-solid fa-pencil fa-fw'></i>
-                                  </button>
-                                  <button type='button' class='btn btn-primary btn-sm' 
-                                          data-bs-toggle='modal' 
-                                          data-bs-target='#deleteDepartmentBtn' 
-                                          data-id='${item.id}'>
-                                      <i class='fa-solid fa-trash fa-fw'></i>
-                                  </button>
-                              </td>
-                          </tr>`;
-
-                          $("#departmentTableBody").append(newRowHTML);
-                      }
-                  });
-              } else {
-                  $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
-              }
-          },
-          error: function (xhr, status, error) {
-              $("#departmentTableBody").html("<tr><td colspan='5'>AJAX Error: " + error + "</td></tr>");
+              console.log("Department Table Updated!");
+          } else {
+              $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
           }
-      });
+      },
+      error: function (xhr, status, error) {
+          console.error("AJAX Error:", error);
+      }
   });
 }
 
+// Run department load function when the tab is clicked & on page load
 $(document).ready(function () {
   loadDepartments();
 });
-$("#departmentsBtn").click(function(){
+$("#departmentsBtn").click(function () {
   loadDepartments();
 });
-
-
-
 
 
 
 //Fetching locations tab
 
 
+// function loadLocations() {
+
+// $("#locationsBtn").click(function () {
+  
+//   // Call function to refresh location table
+
+//     $.ajax({
+//       url: "http://localhost/project2/dist/PHP/SearchAll.php",
+//       type: "GET",
+//       data: { txt: "" },
+//       dataType: "json",
+//       success: function (response) {
+
+//         console.log("Received Response:", response); // DEBUGGING LOG
+        
+//         if (response.status.code === "200") {
+//           // Clear the location table body
+//           $("#locationTableBody").empty();
+  
+//           // Track unique locations to avoid duplicates
+//           const uniqueLocations = {};
+  
+//           // Iterate through the returned data
+//           $.each(response.data.found, function (index, item) {
+//             const uniqueKey = item.locationName;
+  
+//             // Only add the row if this location is not already added
+//             if (!uniqueLocations[uniqueKey]) {
+//               uniqueLocations[uniqueKey] = true;
+  
+//               // Create a new row
+//               const newrowHTML =
+//                 "<tr>" +
+//                 "<td class='align-middle text-nowrap'>" + item.locationName + "</td>" +
+//                 "<td class='text-end text-nowrap'>" +
+//                 "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editLocationModal' data-id='" + item.locationID + "'>" +
+//                 "<i class='fa-solid fa-pencil fa-fw'></i>" +
+//                 "</button> " +
+//                 "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteLocationModal' data-id='" + item.locationID + "'>" +
+//                 "<i class='fa-solid fa-trash fa-fw'></i>" +
+//                 "</button>" +
+//                 "</td>" +
+//                 "</tr>";
+  
+//               // Append the row to the location table body
+//               $("#locationTableBody").append(newrowHTML);
+//             }
+//           });
+//         } else {
+//           // Display error message if the response code is not 200
+//           $("#locationTableBody").html("<tr><td colspan='2'>Error: " + response.status.description + "</td></tr>");
+//         }
+//       },
+//       error: function (xhr, status, error) {
+//         // Handle AJAX errors
+//         $("#locationTableBody").html("<tr><td colspan='2'>AJAX Error: " + error + "</td></tr>");
+//       }
+//     });
+//   });
+// };
+  
+//   $(document).ready(function(){
+//     loadLocations();
+//   });
+
+//   $("#locationsBtn").click(function(){
+//     loadLocations();
+//   });
+
+
+//TEST??
+
 function loadLocations() {
+  console.log("Refreshing Location Table...");
 
-$("#locationsBtn").click(function () {
-  
-  // Call function to refresh location table
-
-    $.ajax({
-      url: "http://localhost/project2/dist/PHP/SearchAll.php",
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/getAllLocations.php",
       type: "GET",
-      data: { txt: "" },
       dataType: "json",
+      cache: false, // Prevent cached responses
       success: function (response) {
-        if (response.status.code === "200") {
-          // Clear the location table body
-          $("#locationTableBody").empty();
-  
-          // Track unique locations to avoid duplicates
-          const uniqueLocations = {};
-  
-          // Iterate through the returned data
-          $.each(response.data.found, function (index, item) {
-            const uniqueKey = item.locationName;
-  
-            // Only add the row if this location is not already added
-            if (!uniqueLocations[uniqueKey]) {
-              uniqueLocations[uniqueKey] = true;
-  
-              // Create a new row
-              const newrowHTML =
-                "<tr>" +
-                "<td class='align-middle text-nowrap'>" + item.locationName + "</td>" +
-                "<td class='text-end text-nowrap'>" +
-                "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editLocationModal' data-id='" + item.locationID + "'>" +
-                "<i class='fa-solid fa-pencil fa-fw'></i>" +
-                "</button> " +
-                "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteLocationModal' data-id='" + item.locationID + "'>" +
-                "<i class='fa-solid fa-trash fa-fw'></i>" +
-                "</button>" +
-                "</td>" +
-                "</tr>";
-  
-              // Append the row to the location table body
-              $("#locationTableBody").append(newrowHTML);
-            }
-          });
-        } else {
-          // Display error message if the response code is not 200
-          $("#locationTableBody").html("<tr><td colspan='2'>Error: " + response.status.description + "</td></tr>");
-        }
+          console.log("Received Response:", response); // Debugging log
+
+          if (response.status.code === "200") {
+              $("#locationTableBody").empty(); // Clear old table data
+
+              if (response.data.length === 0) {
+                  console.log("No locations found!");
+                  $("#locationTableBody").html("<tr><td colspan='2'>No locations available</td></tr>");
+                  return;
+              }
+
+              // Loop through location data and add rows
+              $.each(response.data, function (index, item) {
+                  const rowHtml = `<tr>
+                      <td class='align-middle text-nowrap'>${item.name}</td>
+                      <td class='text-end text-nowrap'>
+                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editLocationModal' data-id='${item.id}'>
+                              <i class='fa-solid fa-pencil fa-fw'></i>
+                          </button>
+                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteLocationModal' data-id='${item.id}'>
+                              <i class='fa-solid fa-trash fa-fw'></i>
+                          </button>
+                      </td>
+                  </tr>`;
+
+                  $("#locationTableBody").append(rowHtml);
+              });
+
+              console.log("Location Table Updated!");
+          } else {
+              console.error("Error loading locations:", response.status.description);
+              $("#locationTableBody").html("<tr><td colspan='2'>Error loading locations</td></tr>");
+          }
       },
       error: function (xhr, status, error) {
-        // Handle AJAX errors
-        $("#locationTableBody").html("<tr><td colspan='2'>AJAX Error: " + error + "</td></tr>");
+          console.error("AJAX Error:", error);
+          $("#locationTableBody").html("<tr><td colspan='2'>AJAX Error: " + error + "</td></tr>");
       }
-    });
   });
-};
-  
-  $(document).ready(function(){
-    loadLocations();
-  });
+}
 
-  $("#locationsBtn").click(function(){
-    loadLocations();
-  });
+// Ensure the function loads when page loads
+$(document).ready(function () {
+  loadLocations();
+});
+
+// Ensure function loads when clicking the locations tab
+$("#locationsBtn").click(function () {
+  loadLocations();
+});
+
 
 
   //Editing Personnel table modal
@@ -525,73 +578,40 @@ $("#editPersonnelModal").on("show.bs.modal", function (e) {
 // SAVES the edits from Personnel edit modal 
 
 $("#editPersonnelForm").on("submit", function (e) {
-  
-  // Executes when the form button with type="submit" is clicked
-  // stop the default browser behviour
-
   e.preventDefault();
 
-
   var formData = $(this).serialize();
-  
+
   $.ajax({
-    url: "http://localhost/project2/dist/PHP/updatePersonnel.php", // Change URL to your update endpoint
-    type: "POST",
-    dataType: "json",
-    data: formData,
-    success: function (response) {
-      if (response.status.code === '200') {
-        // Optionally close the modal and show a success message
-        $("#editPersonnelModal").modal("hide");
-        alert("Update successful!");
-      } else {
-        // Handle error scenario
-        alert("Error updating record: " + response.status.message);
+      url: "http://localhost/project2/dist/PHP/updatePersonnel.php",
+      type: "POST",
+      dataType: "json",
+      data: formData,
+      success: function (response) {
+          if (response.status.code === "200") {
+              console.log("Personnel updated successfully!");
+
+              // Close modal
+              $("#editPersonnelModal").modal("hide");
+
+              // Refresh personnel table after modal closes
+              setTimeout(() => {
+                  loadPersonnel();
+              }, 500);
+          } else {
+              alert("Error updating record: " + response.status.message);
+          }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+          alert("AJAX error: " + textStatus);
       }
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      alert("AJAX error: " + textStatus);
-    }
   });
 });
+
   
 
 
-// EDIT Department entries
-
-// $("#editDepartmentModal").on("show.bs.modal", function (e) {
-//   const departmentId = $(e.relatedTarget).data("id");
-//   console.log(departmentId)
-
-//   $.ajax({
-//       url: "http://localhost/project2/dist/PHP/getDepartmentById.php",
-//       type: "GET", // or "POST" if you prefer
-//       dataType: "json",
-//       data: { id: departmentId },
-//       success: function (response) {
-//           if (response.status.code === "200" && response.data.length > 0) {
-//               const department = response.data[0];
-
-//               // Set the department name in the input field
-//               $("#editDepartmentName").val(department.name);
-              
-//               // Set the department ID in a hidden field for update purposes (if needed)
-//               $("#editDepartmentID").val(department.id);
-              
-//               // Set the location dropdown to the current locationID.
-//               // Ensure that your dropdown options have values that match location IDs.
-//               $("#editDepartmentLocation").val(department.locationID);
-//           } else {
-//               $("#editDepartmentModal .modal-title").text("Department not found");
-//           }
-//       },
-//       error: function () {
-//           $("#editDepartmentModal .modal-title").text("Error retrieving data");
-//       }
-//   });
-// });
-
-//TEST EDIT Department ffrom 2 PHP scripts
+//TEST EDIT Department from 2 PHP scripts
 
 // When the editDepartmentModal is about to be shown...
 $("#editDepartmentModal").on("show.bs.modal", function (e) {
@@ -655,33 +675,37 @@ $("#editDepartmentModal").on("show.bs.modal", function (e) {
 //SAVING edits in Department modal
 
 $("#editDepartmentForm").on("submit", function (e) {
-
   e.preventDefault();
 
   var formData2 = $(this).serialize();
 
   $.ajax({
-    url:"http://localhost/project2/dist/PHP/updateDepartments.php",
-    type: "POST",
-    dataType: "json",
-    data: formData2,
-    
-    success: function(response) {
-if(response.status.code==="200") {
-  $("#editDepartmentModal").modal("hide");
+      url: "http://localhost/project2/dist/PHP/updateDepartments.php",
+      type: "POST",
+      dataType: "json",
+      data: formData2,
+      success: function (response) {
+          if (response.status.code === "200") {
+              console.log("Department updated successfully!");
 
+              // Close modal
+              $("#editDepartmentModal").modal("hide");
 
-  alert("Update successful");
-
-}else {
-  alert ("Error updating record: " + response.status.message);
-}
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      alert( "AJAX error: " + textStatus);
-    }
-  })
+              // Wait for modal to close, then refresh department table
+              setTimeout(() => {
+                  loadDepartments();
+              }, 500);
+          } else {
+              alert("Error updating record: " + response.status.message);
+          }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+          alert("AJAX error: " + textStatus);
+      }
+  });
 });
+
+
 
 //EDIT LOCATION Modal
 
@@ -711,3 +735,37 @@ $("#editLocationModal").on("show.bs.modal", function (e) {
 });
 
 //SAVING edits in Location modal
+
+$("#editLocationForm").on("submit", function (e) {
+  e.preventDefault(); // Prevent default form submission
+
+  var formData3 = $(this).serialize();
+
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/updateLocation.php",
+      type: "POST",
+      dataType: "json",
+      data: formData3,
+      cache: false, // Prevents cached responses
+      success: function (response) {
+          if (response.status.code === "200") {
+              console.log("Location updated successfully!");
+
+              // Close modal
+              $("#editLocationModal").modal("hide");
+
+              // Refresh locations AFTER the modal is completely hidden
+              $("#editLocationModal").on('hidden.bs.modal', function () {
+                  console.log("Refreshing locations...");
+                  loadLocations(); // Reload table
+              });
+
+          } else {
+              console.error("Error updating record: " + response.status.message);
+          }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+          console.error("AJAX error: " + textStatus);
+      }
+  });
+});
