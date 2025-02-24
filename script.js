@@ -2,11 +2,11 @@
 //SEARCH depending on active tab
 
 $("#searchInp").on("keyup", function () {
-  var searchText = $(this).val(); // Get input value
+  var searchText = $(this).val(); 
 
   // Check which tab is currently active
   if ($("#departmentsBtn").hasClass("active")) {  
-      // Search in Departments
+      
       $.ajax({
           url: "http://localhost/project2/dist/PHP/SearchAll.php",
           type: "GET",
@@ -14,14 +14,14 @@ $("#searchInp").on("keyup", function () {
           dataType: "json",
           success: function (response) {
               if (response.status.code == "200") {
-                  $("#departmentTableBody").empty(); // Corrected table ID
+                  $("#departmentTableBody").empty(); 
                   let uniqueDepartments = new Set();
 
                   $.each(response.data.found, function (index, item) {
-                    if (!uniqueDepartments.has(item.departmentName)) {  // Check if location is already added
+                    if (!uniqueDepartments.has(item.departmentName)) {  
                         uniqueDepartments.add(item.departmentName);
                       var rowHtml = "<tr>" +
-                          "<td class='align-middle text-nowrap'>" + item.departmentName + "</td>" +  // Ensure PHP sends this field
+                          "<td class='align-middle text-nowrap'>" + item.departmentName + "</td>" +  
                           "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
                           "<td class='text-end text-nowrap'>" +
                           "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='" + item.id + "'>" +
@@ -135,14 +135,14 @@ $("#refreshBtn").click(function () {
   
   if ($("#personnelBtn").hasClass("active")) {
     
-    // Refresh personnel table
+   
 loadPersonnel();
     
   } else {
     
     if ($("#departmentsBtn").hasClass("active")) {
       
-      // Refresh department table
+      
    loadDepartments();
       
     } else {
@@ -150,7 +150,7 @@ loadPersonnel();
       if($("#locationsBtn").hasClass("active")){
          
       }
-      // Refresh location table
+      
     loadLocations()
       
     }
@@ -162,22 +162,45 @@ loadPersonnel();
 //FILTER button showing modal
 
 $("#filterBtn").click(function () {
-  // Open the filter modal
-  $("#filterPersonnelModal").modal('show');
+  if ($("#personnelBtn").hasClass("active")) {
+    // Open the filter modal only if Personnel tab is active
+    $("#filterPersonnelModal").modal("show");
+  } else {
+    console.log("Filter button is disabled for Departments and Locations.");
+  }
 });
+
+//DISABLE Filter button for Department and Personnel tab
+
+function updateFilterButton() {
+  if ($("#personnelBtn").hasClass("active")) {
+    $("#filterBtn").prop("disabled", false); // Enable when Personnel is active
+  } else {
+    $("#filterBtn").prop("disabled", true); // Disable for other tabs
+  }
+}
+
+// Call function when switching tabs
+$("#personnelBtn, #departmentsBtn, #locationsBtn").click(function () {
+  updateFilterButton();
+});
+
+// Run on page load to set the correct state
+$(document).ready(function () {
+  updateFilterButton();
+});
+
 
 
 //FILTER Button Function
 
 $("#filterPersonnelForm").submit(function (e) {
-  e.preventDefault(); // Prevent the form from submitting normally
+  e.preventDefault(); 
 
-  var department = $("#filterPersonnelDepartment").val(); // Remove .trim() for testing
-  var location = $("#filterPersonnelLocation").val(); // Remove .trim() for testing
-  // Get the values from the input fields for department and location
-
-
-  // Send an AJAX request to SearchAll.php to retrieve search
+  var department = $("#filterPersonnelDepartment").val(); 
+  var location = $("#filterPersonnelLocation").val(); 
+  
+  
   $.ajax({
     url: "http://localhost/project2/dist/PHP/SearchAll.php",
     type: 'GET',
@@ -185,8 +208,7 @@ $("#filterPersonnelForm").submit(function (e) {
       txt: '' // Empty string to get all personnel
     },
     success: function (response) {
-      // Log the response to see what is returned
-      console.log("AJAX Response: ", response);
+      
 
       let filteredResults = response.data.found;
 
@@ -237,15 +259,15 @@ $("#filterPersonnelForm").submit(function (e) {
             "</td>" +
             "</tr>";
 
-          // Append the generated row to the table body
+          
           $("#personnelTableBody").append(rowHtml);
         });
       } else {
-        // If no personnel match the filter, show a message or empty state
+        
         $("#personnelTableBody").append('<tr><td colspan="5">No personnel found</td></tr>');
       }
 
-      // Close the modal after applying the filter
+      
       $("#filterPersonnelModal").modal('hide');
     },
     error: function (xhr, status, error) {
