@@ -22,34 +22,25 @@
 		exit;
 	}
 
-	// Check if required fields are missing
-	if (!isset($_POST['name']) || !isset($_POST['locationID'])) {
+	// Check if the required field is present
+	if (!isset($_POST['name']) || trim($_POST['name']) === "") {
 		$output['status']['code'] = "400";
 		$output['status']['name'] = "missing parameters";
-		$output['status']['description'] = "Missing department name or locationID.";
+		$output['status']['description'] = "Missing or empty location name.";
 		echo json_encode($output);
 		exit;
 	}
 
 	$name = trim($_POST['name']);
-	$locationID = (int)$_POST['locationID'];
 
-	if ($name === "" || $locationID <= 0) {
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "invalid data";
-		$output['status']['description'] = "Invalid department name or locationID.";
-		echo json_encode($output);
-		exit;
-	}
-
-	// Find the next available ID manually (prevent ID gaps)
-	$nextIDQuery = $conn->query("SELECT IFNULL(MAX(id) + 1, 1) AS nextID FROM department");
+	// Find the next available ID manually to prevent gaps
+	$nextIDQuery = $conn->query("SELECT IFNULL(MAX(id) + 1, 1) AS nextID FROM location");
 	$nextIDRow = $nextIDQuery->fetch_assoc();
 	$nextID = $nextIDRow['nextID'];
 
 	// Manually insert with a specific ID
-	$query = $conn->prepare('INSERT INTO department (id, name, locationID) VALUES (?, ?, ?)');
-	$query->bind_param("isi", $nextID, $name, $locationID);
+	$query = $conn->prepare('INSERT INTO location (id, name) VALUES (?, ?)');
+	$query->bind_param("is", $nextID, $name);
 
 	if ($query->execute()) {
 		$output['status']['code'] = "200";

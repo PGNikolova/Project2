@@ -303,7 +303,7 @@
 
 
 
-<!-- filter modal for personnel tab -->
+<!-- FILTER modal for personnel tab -->
   
 <div id="filterPersonnelModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
   
@@ -349,7 +349,9 @@
   
 </div>
 
-<!--Add modal for Add new employee in PERSONNEL tab-->
+
+
+<!--Add modal for PERSONNEL tab-->
 
 <div id="addPersonnelModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
@@ -369,12 +371,12 @@
     <input type="hidden" id="addPersonnelEmployeeID">
  
     <div class="form-floating mb-3">
-      <input type="text" class="form-control" id="addPersonnelFirstName" placeholder="First name" required>
+      <input type="text" class="form-control" id="addPersonnelFirstName" name="firstName" placeholder="First Name" required>
       <label for="addPersonnelFirstName">First name</label>
     </div>
 
     <div class="form-floating mb-3">
-      <input type="text" class="form-control" id="addPersonnelLastName" placeholder="Last name" required>
+      <input type="text" class="form-control" id="addPersonnelLastName" name="lastName" placeholder="Last Name" required>
       <label for="addPersonnelLastName">Last name</label>
     </div>
 
@@ -400,7 +402,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="submit" form="addPersonnelForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
+    <button type="submit" form="addPersonnelForm" class="btn btn-outline-primary btn-sm myBtn">ADD</button>
     <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
   </div>
 </div>
@@ -409,10 +411,94 @@
 
 </div>
 
-<!--Add modal for Add new DEPARTMENT in Department tab-->
+<!--Add modal for  DEPARTMENT  tab-->
+<div id="addDepartmentModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="addDepartmentLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+    
+    <div class="modal-content shadow"> 
+      
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title" id="addDepartmentLabel">Add Department</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        
+        <form id="addDepartmentForm">
+          
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="addDepartmentName" name="departmentName" placeholder="Department Name" required>
+
+            <label for="addDepartmentName">Department Name</label>
+          </div>
+          
+          <div class="form-floating mb-3">
+            <select class="form-select" id="addDepartmentLocation" required>
+              <option selected disabled>Select a Location</option>
+              <!-- Options will be populated dynamically -->
+            </select>
+            <label for="addDepartmentLocation">Location</label>
+          </div>
+          
+        </form>
+        
+      </div>
+      
+      <div class="modal-footer">
+        <button type="submit" form="addDepartmentForm" class="btn btn-outline-primary btn-sm myBtn">ADD</button>
+        <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+</div>
 
 
 
+<!--Add modal for LOCATION tab-->
+
+
+<div id="addLocationModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="addDepartmentLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+    
+    <div class="modal-content shadow"> 
+      
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title" id="addLocationtLabel">Add Location</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        
+        <form id="addLocationForm">
+          
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="addLocationName" name="locationName" placeholder="Location Name" required>
+
+            <label for="addLocatonName">Location Name</label>
+          </div>
+      
+          
+        </form>
+        
+      </div>
+      
+      <div class="modal-footer">
+        <button type="submit" form="addLocationForm" class="btn btn-outline-primary btn-sm myBtn">ADD</button>
+        <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+</div>
+
+  
 
 
 
