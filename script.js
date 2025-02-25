@@ -565,7 +565,7 @@ function loadPersonnel() {
                         "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editPersonnelModal' data-id='" + item.id + "'>" +
                         "<i class='fa-solid fa-pencil fa-fw'></i>" +
                         "</button> " +
-                        "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deletePersonnelModal' data-id='" + item.id + "'>" +
+                        "<button type='button' class='btn btn-danger btn-sm deletePersonnelBtn' data-id='" + item.id + "'>" +
                         "<i class='fa-solid fa-trash fa-fw'></i>" +
                         "</button>" +
                         "</td>" +
@@ -619,7 +619,7 @@ function loadDepartments() {
                           <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='${item.id}'>
                               <i class='fa-solid fa-pencil fa-fw'></i>
                           </button>
-                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteDepartmentModal' data-id='${item.id}'>
+                          <button type='button' class='btn btn-danger btn-sm deleteDepartmentBtn' data-id='${item.id}'>
                               <i class='fa-solid fa-trash fa-fw'></i>
                           </button>
                       </td>
@@ -681,7 +681,7 @@ function loadLocations() {
                           <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editLocationModal' data-id='${item.id}'>
                               <i class='fa-solid fa-pencil fa-fw'></i>
                           </button>
-                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#deleteLocationModal' data-id='${item.id}'>
+                          <button type='button' class='btn btn-danger btn-sm deleteLocationBtn' data-id='${item.id}'>
                               <i class='fa-solid fa-trash fa-fw'></i>
                           </button>
                       </td>
@@ -969,3 +969,106 @@ $("#editLocationForm").on("submit", function (e) {
       }
   });
 });
+
+
+//DELETE PERSONNEL
+
+$(document).on("click", ".deletePersonnelBtn", function () {
+  let personnelId = $(this).attr("data-id");
+  $("#deleteConfirmModal").modal("show");
+
+  $("#confirmDeleteBtn").off("click").on("click", function () {
+      $.ajax({
+          url: "http://localhost/project2/dist/PHP/deletePersonnelByID.php",
+          type: "POST",
+          data: { id: personnelId },
+          dataType: "json",
+          success: function (response) {
+              if (response.status.code === "200") {
+                  console.log("Personnel deleted successfully!");
+                  $(`button[data-id="${personnelId}"]`).closest("tr").remove();
+                  $("#deleteConfirmModal").modal("hide");
+              } else {
+                  console.error("Error deleting personnel:", response.status.description);
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error("AJAX Error:", status, error);
+          }
+      });
+  });
+});
+
+
+//DELETE DEPARTMENT with dependancies check
+
+$(document).on("click", ".deleteDepartmentBtn", function () {
+  let departmentId = $(this).attr("data-id");
+
+  console.log("Attempting to delete department ID:", departmentId); // Log department ID
+
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/deleteDepartmentByID.php",
+      type: "POST",
+      data: { id: departmentId },
+      dataType: "json",
+      success: function (response) {
+          console.log("Delete response received:", response); // Log full response
+
+          if (response.status.code === "409") {
+              console.warn("Dependency exists. Showing warning modal."); // Log dependency error
+              showDependencyWarning(response.status.description);
+          } else if (response.status.code === "200") {
+              console.log("Department deleted successfully!");
+              $(`button[data-id="${departmentId}"]`).closest("tr").remove();
+              $("#deleteConfirmModal").modal("hide");
+          } else {
+              console.error("Unexpected response:", response.status.description);
+          }
+      },
+      error: function (xhr, status, error) {
+          console.error("AJAX Error:", status, error);
+      }
+  });
+});
+
+
+
+//DELETE LOCATION  with dependancies check 
+
+$(document).on("click", ".deleteLocationBtn", function () {
+  let locationId = $(this).attr("data-id");
+  $("#deleteConfirmModal").modal("show");
+
+  $("#confirmDeleteBtn").off("click").on("click", function () {
+      $.ajax({
+          url: "http://localhost/project2/dist/PHP/deleteLocationByID.php",
+          type: "POST",
+          data: { id: locationId },
+          dataType: "json",
+          success: function (response) {
+              if (response.status.code === "200") {
+                  console.log("Location deleted successfully!");
+                  $(`button[data-id="${locationId}"]`).closest("tr").remove();
+                  $("#deleteConfirmModal").modal("hide");
+              } else if (response.status.code === "409") {
+                  $("#deleteConfirmModal").modal("hide");
+                  showDependencyWarning(response.status.description);
+              } else {
+                  console.error("Error deleting location:", response.status.description);
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error("AJAX Error:", status, error);
+          }
+      });
+  });
+});
+
+//DEPENDANCIES Warning
+
+function showDependencyWarning(message) {
+  console.log("Triggering dependency warning modal:", message); // Debugging log
+  $("#dependencyWarningMessage").text(message);
+  $("#dependencyWarningModal").modal("show");
+}

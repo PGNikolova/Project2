@@ -171,7 +171,7 @@
 
 </section>
 
-<!--EDIT PERSONNEL-->
+<!--EDIT PERSONNEL MODAL-->
     
 <div id="editPersonnelModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
   
@@ -235,7 +235,7 @@
 </div>
 
 
-<!--EDIT DEPARTMENT ENTRIES-->
+<!--EDIT DEPARTMENT MODAL-->
 
 <div id="editDepartmentModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
@@ -496,6 +496,65 @@
     
   </div>
   
+</div>
+
+<!-- DELETE modal-->
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteConfirmModal" class="modal fade" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-warning bg-gradient text-white">
+        <h5 class="modal-title" id="deleteConfirmLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this entry?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning btn-sm" id="confirmDeleteBtn">DELETE</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE modal
+<div id="deleteConfirmModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this entry?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning btn-sm" id="confirmDeleteBtn">DELETE</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!--DEPENDANCIES WARNING modal-->
+
+<div id="dependencyWarningModal" class="modal fade">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-danger text-black">
+        <h5 class="modal-title">Cannot Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="dependencyWarningMessage">This entry has dependencies and cannot be deleted.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
 </div>
 
   

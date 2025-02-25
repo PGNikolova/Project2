@@ -1,70 +1,45 @@
 <?php
+    ini_set('display_errors', 'On');
+    error_reporting(E_ALL);
+    include("config.php");
+    header('Content-Type: application/json; charset=UTF-8');
 
-	// example use from browser
-	// use insertDepartment.php first to create new dummy record and then specify it's id in the command below
-	// http://localhost/companydirectory/libs/php/deleteDepartmentByID.php?id=<id>
+    $conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
 
-	// remove next two lines for production
-	
-	ini_set('display_errors', 'On');
-	error_reporting(E_ALL);
+    if (mysqli_connect_errno()) {
+		error_log("Database connection failed.");
+        echo json_encode(["status" => ["code" => "300", "name" => "failure", "description" => "Database unavailable"]]);
+        exit;
+    }
 
-	$executionStartTime = microtime(true);
+    $departmentID = $_REQUEST['id'];
+	error_log("Received department ID: " . $departmentID);
+    // Check if personnel exist in this department
+    $checkQuery = $conn->prepare('SELECT COUNT(*) FROM personnel WHERE departmentID = ?');
+    $checkQuery->bind_param("i", $departmentID);
+    $checkQuery->execute();
+    $checkQuery->bind_result($count);
+    $checkQuery->fetch();
+    $checkQuery->close();
 
-	include("config.php");
+    if ($count > 0) {
+		error_log("Cannot delete department due to personnel dependency.");
+        echo json_encode(["status" => ["code" => "409", "name" => "conflict", "description" => "This department has personnel assigned and cannot be deleted."]]);
+        exit;
+    }
 
-	header('Content-Type: application/json; charset=UTF-8');
+    // Proceed with deletion if no dependencies exist
+    $deleteQuery = $conn->prepare('DELETE FROM department WHERE id = ?');
+    $deleteQuery->bind_param("i", $departmentID);
+    $deleteQuery->execute();
 
-	$conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
+    if ($deleteQuery) {
+		error_log("Department deleted successfully.");
+        echo json_encode(["status" => ["code" => "200", "name" => "ok", "description" => "Department deleted successfully"]]);
+    } else {
+		error_log("Deleting department failed.");
+        echo json_encode(["status" => ["code" => "400", "name" => "error", "description" => "Query failed"]]);
+    }
 
-	if (mysqli_connect_errno()) {
-		
-		$output['status']['code'] = "300";
-		$output['status']['name'] = "failure";
-		$output['status']['description'] = "database unavailable";
-		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output);
-
-		exit;
-
-	}	
-
-	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
-	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
-
-	$query = $conn->prepare('DELETE FROM department WHERE id = ?');
-	
-	$query->bind_param("i", $_REQUEST['id']);
-
-	$query->execute();
-	
-	if (false === $query) {
-
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
-
-		mysqli_close($conn);
-
-		echo json_encode($output); 
-
-		exit;
-
-	}
-
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = [];
-	
-	mysqli_close($conn);
-
-	echo json_encode($output); 
-
+    $conn->close();
 ?>
