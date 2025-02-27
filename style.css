@@ -24,3 +24,29 @@ tr {
 .myBtn {
   width: 70px;
 }
+
+/* Ensure table remains scrollable */
+@media (max-width: 992px) {
+  .table-responsive {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+  }
+
+  /* Keep Name and Action buttons visible */
+  .table tbody td:not(:first-child):not(:last-child) {
+      display: none;
+  }
+
+  /* Ensure Edit & Delete buttons remain visible */
+  .table tbody td:last-child {
+      text-align: center;
+      display: block;
+  }
+
+  /* Prevent buttons from shrinking too much */
+  .btn {
+      min-width: 40px;
+      padding: 5px 8px;
+  }
+}

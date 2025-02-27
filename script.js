@@ -310,7 +310,7 @@ $("#filterPersonnelForm").submit(function (e) {
 
 
 
-//TEST ADD new stuff
+
 
 $(document).ready(function () {
   // Load dropdowns when opening modals
@@ -555,24 +555,26 @@ function loadPersonnel() {
         $("#personnelTableBody").empty();
 
         $.each(response.data.found, function(index, item) {
-          var rowHtml = "<tr>" +
-                        "<td class='align-middle text-nowrap'>" + item.lastName + ", " + item.firstName + "</td>" +
-                        "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.jobTitle + "</td>" +
-                        "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.locationName + "</td>" +
-                        "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.email + "</td>" +
-                        "<td class='align-middle text-nowrap d-none d-md-table-cell'>" + item.departmentName + "</td>" +
-                        "<td class='text-end text-nowrap'>" +
-                        "<button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editPersonnelModal' data-id='" + item.id + "'>" +
-                        "<i class='fa-solid fa-pencil fa-fw'></i>" +
-                        "</button> " +
-                        "<button type='button' class='btn btn-danger btn-sm deletePersonnelBtn' data-id='" + item.id + "'>" +
-                        "<i class='fa-solid fa-trash fa-fw'></i>" +
-                        "</button>" +
-                        "</td>" +
-                        "</tr>";
-
-                       $("#personnelTableBody").append(rowHtml);
-                });
+          let rowHtml = `<tr>
+              <td class="align-middle text-nowrap">${item.lastName}, ${item.firstName}</td>
+              <td class="align-middle text-nowrap d-none d-lg-table-cell">${item.jobTitle}</td>
+              <td class="align-middle text-nowrap d-none d-lg-table-cell">${item.locationName}</td>
+              <td class="align-middle text-nowrap d-none d-lg-table-cell">${item.email}</td>
+              <td class="align-middle text-nowrap d-none d-lg-table-cell">${item.departmentName}</td>
+              <td class="text-end text-nowrap">
+                  <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="${item.id}">
+                      <i class="fa-solid fa-pencil fa-fw"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm deletePersonnelBtn" data-id="${item.id}">
+                      <i class="fa-solid fa-trash fa-fw"></i>
+                  </button>
+              </td>
+          </tr>`;
+      
+          $("#personnelTableBody").append(rowHtml);
+      });
+      
+      
             } else {
                 $("#personnelTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
             }
@@ -612,22 +614,22 @@ function loadDepartments() {
               $("#departmentTableBody").empty();
 
               $.each(response.data, function (index, item) {
-                  const rowHtml = `<tr>
-                      <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.department}</td>
-                      <td class='align-middle text-nowrap d-none d-md-table-cell'>${item.locationName}</td>
-                      <td class='text-end text-nowrap'>
-                          <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#editDepartmentModal' data-id='${item.id}'>
-                              <i class='fa-solid fa-pencil fa-fw'></i>
-                          </button>
-                          <button type='button' class='btn btn-danger btn-sm deleteDepartmentBtn' data-id='${item.id}'>
-                              <i class='fa-solid fa-trash fa-fw'></i>
-                          </button>
-                      </td>
-                  </tr>`;
-
-                  $("#departmentTableBody").append(rowHtml);
-              });
-
+                let rowHtml = `<tr>
+                    <td class="align-middle text-nowrap">${item.department}</td>
+                    <td class="align-middle text-nowrap">${item.locationName}</td>
+                    <td class="text-end text-nowrap">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id="${item.id}">
+                            <i class="fa-solid fa-pencil fa-fw"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm deleteDepartmentBtn" data-id="${item.id}">
+                            <i class="fa-solid fa-trash fa-fw"></i>
+                        </button>
+                    </td>
+                </tr>`;
+                
+                $("#departmentTableBody").append(rowHtml);
+            });
+            
               console.log("Department Table Updated!");
           } else {
               $("#departmentTableBody").html("<tr><td colspan='5'>Error: " + response.status.description + "</td></tr>");
@@ -1038,37 +1040,42 @@ $(document).on("click", ".deleteDepartmentBtn", function () {
 
 $(document).on("click", ".deleteLocationBtn", function () {
   let locationId = $(this).attr("data-id");
-  $("#deleteConfirmModal").modal("show");
 
-  $("#confirmDeleteBtn").off("click").on("click", function () {
-      $.ajax({
-          url: "http://localhost/project2/dist/PHP/deleteLocationByID.php",
-          type: "POST",
-          data: { id: locationId },
-          dataType: "json",
-          success: function (response) {
-              if (response.status.code === "200") {
-                  console.log("Location deleted successfully!");
-                  $(`button[data-id="${locationId}"]`).closest("tr").remove();
-                  $("#deleteConfirmModal").modal("hide");
-              } else if (response.status.code === "409") {
-                  $("#deleteConfirmModal").modal("hide");
-                  showDependencyWarning(response.status.description);
-              } else {
-                  console.error("Error deleting location:", response.status.description);
-              }
-          },
-          error: function (xhr, status, error) {
-              console.error("AJAX Error:", status, error);
+  // Step 1: Check for dependencies BEFORE showing confirmation modal
+  $.ajax({
+      url: "http://localhost/project2/dist/PHP/deleteLocationByID.php",
+      type: "POST",
+      data: { id: locationId },
+      dataType: "json",
+      success: function (response) {
+          if (response.status.code === "409") {
+              showDependencyWarning(response.status.description);
+          } else if (response.status.code === "200") {
+              $("#deleteConfirmModal").modal("show");
+
+              // Step 2: Handle actual deletion only if confirmed
+              $("#confirmDeleteBtn").off("click").on("click", function () {
+                  $.ajax({
+                      url: "http://localhost/project2/dist/PHP/deleteLocationByID.php",
+                      type: "POST",
+                      data: { id: locationId },
+                      dataType: "json",
+                      success: function (deleteResponse) {
+                          if (deleteResponse.status.code === "200") {
+                              $(`button[data-id="${locationId}"]`).closest("tr").remove();
+                              $("#deleteConfirmModal").modal("hide");
+                          }
+                      }
+                  });
+              });
           }
-      });
+      }
   });
 });
 
-//DEPENDANCIES Warning
-
+// Dependency Warning Modal Function
 function showDependencyWarning(message) {
-  console.log("Triggering dependency warning modal:", message); // Debugging log
   $("#dependencyWarningMessage").text(message);
   $("#dependencyWarningModal").modal("show");
 }
+
